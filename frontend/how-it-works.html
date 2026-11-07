@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How LangGraph Works — AI Mission Control</title>
+    <meta name="description" content="Understand LangGraph concepts: State, Nodes, Edges, Routing, Streaming, and more. A beginner-friendly but technically accurate guide.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing.css">
+    <style>
+        .page-hero { padding: 120px 0 60px; text-align: center; position: relative; z-index: 1; }
+        .page-hero .page-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); background: rgba(6,182,212,.1); border: 1px solid rgba(6,182,212,.2); padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; }
+        .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px; }
+        .page-hero p { font-size: 18px; color: var(--text-muted); max-width: 600px; margin: 0 auto; }
+        .concepts-section { padding: 60px 0 100px; position: relative; z-index: 1; }
+        .concept-block { max-width: 900px; margin: 0 auto 56px; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
+        .concept-block:nth-child(even) { direction: rtl; }
+        .concept-block:nth-child(even) > * { direction: ltr; }
+        .concept-text h2 { font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; }
+        .concept-text p  { color: var(--text-muted); line-height: 1.7; margin-bottom: 12px; }
+        .concept-code-block {
+            background: rgba(13,17,26,.9); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 12px; padding: 20px; font-family: var(--mono); font-size: 13px;
+            color: #9cdcfe; line-height: 1.8; overflow-x: auto;
+        }
+        .concept-code-block .kw { color: #c586c0; }
+        .concept-code-block .fn { color: #dcdcaa; }
+        .concept-code-block .cm { color: #6a9955; }
+        .concept-number { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; font-weight: 800; font-size: 16px; margin-bottom: 14px; }
+        .cards-row { max-width: 1100px; margin: 0 auto 60px; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 24px; }
+        .hiw-card {
+            background: rgba(13,17,26,.8); border: 1px solid rgba(255,255,255,.08);
+            border-radius: 14px; padding: 28px 24px; transition: all .25s;
+        }
+        .hiw-card:hover { border-color: rgba(255,255,255,.15); transform: translateY(-2px); }
+        .hiw-card .num { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; opacity: .7; }
+        .hiw-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .hiw-card p { font-size: 14px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
+        .hiw-card .code-snip { font-family: var(--mono); font-size: 11px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.06); border-radius: 6px; padding: 8px 10px; color: #9cdcfe; }
+        .divider-arrow { text-align: center; font-size: 24px; color: var(--text-muted); margin: 4px 0; }
+        .back-nav { position: fixed; bottom: 32px; right: 32px; z-index: 200; }
+        .back-nav a {
+            display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+            background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3);
+            border-radius: 10px; color: var(--purple); font-size: 13px; font-weight: 600;
+            text-decoration: none; transition: all .2s; backdrop-filter: blur(10px);
+        }
+        .back-nav a:hover { background: rgba(139,92,246,.25); }
+        @media(max-width:700px){ .concept-block { grid-template-columns:1fr; } .concept-block:nth-child(even){ direction:ltr; } }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <nav class="nav" id="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span>LangGraph<span class="logo-accent"> Mission Control</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/demo">Live Demo</a>
+                <a href="/how-it-works" style="color:#fff">How It Works</a>
+                <a href="/architecture">Architecture</a>
+                <a href="/about">About</a>
+                <a href="/demo" class="nav-cta">Launch Demo →</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="page-label">LangGraph Explained</div>
+        <h1>How LangGraph Works</h1>
+        <p>A clear, beginner-friendly — yet technically accurate — guide to building AI agents with LangGraph.</p>
+    </div>
+
+    <div class="concepts-section">
+        <div style="max-width:1100px;margin:0 auto;padding:0 24px">
+
+            <!-- CONCEPT CARDS -->
+            <div class="cards-row">
+                <div class="hiw-card" style="border-color:rgba(59,130,246,.2)">
+                    <div class="num" style="color:var(--blue)">01 · State</div>
+                    <h3>Shared Agent State</h3>
+                    <p>State is a TypedDict that flows through every node. Each node reads from it and writes updates back. It holds everything: intent, confidence, response.</p>
+                    <div class="code-snip">class AgentState(TypedDict):<br>&nbsp;&nbsp;input: str<br>&nbsp;&nbsp;intent: str<br>&nbsp;&nbsp;confidence: float<br>&nbsp;&nbsp;response: str</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(16,185,129,.2)">
+                    <div class="num" style="color:var(--green)">02 · Nodes</div>
+                    <h3>Processing Units</h3>
+                    <p>Each node is a plain Python function. It receives the current state, does work (LLM call, logic, DB query), and returns a dict of updates.</p>
+                    <div class="code-snip">def billing_node(state):<br>&nbsp;&nbsp;return {"response": "...",<br>&nbsp;&nbsp;&nbsp;&nbsp;"current_node": "BILLING"}</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(139,92,246,.2)">
+                    <div class="num" style="color:var(--purple)">03 · Edges</div>
+                    <h3>Connection Paths</h3>
+                    <p>Edges define execution order. Static edges go to a fixed next node. Conditional edges call a function to decide the next node at runtime.</p>
+                    <div class="code-snip">graph.add_edge("billing", "response")<br>graph.add_conditional_edges(<br>&nbsp;&nbsp;"knowledge_retriever", decide_route)</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(249,115,22,.2)">
+                    <div class="num" style="color:var(--orange)">04 · Router</div>
+                    <h3>Conditional Routing</h3>
+                    <p>The router is a Python function that reads the detected intent from state and returns a string — the name of the next node to execute.</p>
+                    <div class="code-snip">def decide_route(state):<br>&nbsp;&nbsp;if state["intent"] == "BILLING":<br>&nbsp;&nbsp;&nbsp;&nbsp;return "billing"</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(6,182,212,.2)">
+                    <div class="num" style="color:var(--cyan)">05 · START / END</div>
+                    <h3>Entry & Exit</h3>
+                    <p>START is the special entry node every graph has. END signals termination. The final state at END is the result of the workflow.</p>
+                    <div class="code-snip">graph.add_edge(START, "intent_analyzer")<br>graph.add_edge("response", END)</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(16,185,129,.2)">
+                    <div class="num" style="color:var(--green)">06 · Streaming</div>
+                    <h3>Real-Time Output</h3>
+                    <p>LangGraph supports streaming via <code>app.stream()</code>. Each chunk contains the output of a single node, enabling live UI updates as the agent executes.</p>
+                    <div class="code-snip">for chunk in app.stream(state):<br>&nbsp;&nbsp;for node, updates in chunk.items():<br>&nbsp;&nbsp;&nbsp;&nbsp;yield updates</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(239,68,68,.2)">
+                    <div class="num" style="color:var(--red)">07 · Persistence</div>
+                    <h3>Memory & Checkpointing</h3>
+                    <p>This app persists successful turns in SQLite and loads the current session through its MEMORY node. It does not configure a LangGraph checkpointer.</p>
+                    <div class="code-snip">memory = get_memory(session_id)<br>state["memory_context"] = memory</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(249,115,22,.2)">
+                    <div class="num" style="color:var(--orange)">08 · Human-in-the-Loop</div>
+                    <h3>Approval Gates</h3>
+                    <p>LangGraph supports interrupt-based approval, but this project has no approval gate or checkpoint-resume path configured.</p>
+                    <div class="code-snip">graph.compile(<br>&nbsp;&nbsp;interrupt_before=["billing"]<br>)</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(139,92,246,.2)">
+                    <div class="num" style="color:var(--purple)">09 · Compile & Run</div>
+                    <h3>Execution Engine</h3>
+                    <p>Once the graph is defined, call <code>.compile()</code> to get a runnable app. Then call <code>.invoke()</code> or <code>.stream()</code> with an initial state to execute it.</p>
+                    <div class="code-snip">app = graph.compile()<br>result = app.invoke({"input": "..."})</div>
+                </div>
+                <div class="hiw-card" style="border-color:rgba(59,130,246,.2)">
+                    <div class="num" style="color:var(--blue)">10 · Why LangGraph?</div>
+                    <h3>Graph-Based Agents</h3>
+                    <p>Unlike simple LLM chains, LangGraph gives you explicit control: which node runs next, what state is shared, when to loop, and when to stop — all with Python functions.</p>
+                    <div class="code-snip"># Control flow is explicit<br># State is typed<br># Streaming is built-in</div>
+                </div>
+            </div>
+
+            <!-- Execution Flow -->
+            <div style="max-width:700px;margin:60px auto 0;text-align:center">
+                <div class="section-label">Actual Execution Flow</div>
+                <h2 class="section-title" style="font-size:1.6rem;margin-bottom:24px">This Project's LangGraph Workflow</h2>
+                <div style="display:flex;flex-direction:column;align-items:center;gap:0">
+                    <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--green)">START</div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--purple)">SESSION MEMORY<br><small style="font-weight:400;font-size:12px;color:var(--text-muted)">SQLite successful turns</small></div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--cyan)">INTENT ANALYZER<br><small style="font-weight:400;font-size:12px;color:var(--text-muted)">Gemini LLM · Deterministic fallback</small></div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--cyan)">KNOWLEDGE RETRIEVER<br><small style="font-weight:400;font-size:12px;color:var(--text-muted)">SQLite FTS5 · source citations</small></div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--purple)">ROUTER<br><small style="font-weight:400;font-size:12px;color:var(--text-muted)">add_conditional_edges</small></div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+                        <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--red)">BILLING</div>
+                        <div style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--blue)">TECHNICAL</div>
+                        <div style="background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--orange)">ORDER</div>
+                        <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--green)">ACCOUNT</div>
+                        <div style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--purple)">GENERAL</div>
+                    </div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--purple)">RESPONSE GENERATOR</div>
+                    <div class="divider-arrow">↓</div>
+                    <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:10px;padding:12px 40px;font-weight:700;color:var(--green)">END</div>
+                </div>
+                <div style="margin-top:32px">
+                    <a href="/demo" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        See It Live in the Demo
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                LangGraph AI Mission Control
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a><a href="/demo">Live Demo</a>
+                <a href="/how-it-works">How It Works</a><a href="/architecture">Architecture</a>
+                <a href="/about">About</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="back-nav">
+        <a href="/demo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Open Live Demo
+        </a>
+    </div>
+
+    <script src="landing.js"></script>
+</body>
+</html>

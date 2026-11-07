@@ -1,0 +1,10 @@
+langgraph>=0.2.0
+typing-extensions>=4.8.0
+fastapi>=0.110.0
+uvicorn>=0.28.0
+streamlit>=1.32.0
+
+langchain-google-genai
+python-dotenv
+python-multipart>=0.0.9
+pypdf>=5.0.0

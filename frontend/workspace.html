@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#070b14">
+    <title>Platform | LangGraph AI Mission Control</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/workspace.css?v=3">
+</head>
+<body>
+    <div class="workspace-shell">
+        <header class="workspace-topbar">
+            <a class="workspace-brand" href="/"><span>◈</span><strong>LANGGRAPH <b>AI</b> MISSION CONTROL</strong></a>
+            <nav aria-label="Main navigation">
+                <a href="/">Home</a><a href="/demo">Live Demo</a><a href="/how-it-works">How It Works</a><a href="/architecture">Architecture</a><a href="/agents">Agents</a><a href="/knowledge-base">Knowledge Base</a><a href="/memory">Memory</a><a href="/tools">Tools</a><a href="/analytics">Analytics</a><a href="/execution-history">History</a><a href="/settings">Settings</a><a href="/about">About</a>
+            </nav>
+            <span id="workspace-status" class="workspace-status"><i></i> CHECKING</span>
+        </header>
+        <main class="workspace-main">
+            <div class="breadcrumbs"><a href="/">Platform</a><span>/</span><span id="workspace-crumb">Overview</span></div>
+            <div class="workspace-title-row">
+                <div><p id="workspace-eyebrow" class="eyebrow">MISSION CONTROL</p><h1 id="workspace-title">Platform</h1><p id="workspace-description" class="workspace-description"></p></div>
+                <a class="primary-link" href="/demo">Open Mission Control <span>↗</span></a>
+            </div>
+            <section id="workspace-content" class="workspace-content" aria-live="polite"></section>
+        </main>
+        <footer class="workspace-footer"><span>LANGGRAPH AI MISSION CONTROL</span><span>Runs, session memory, and document index are stored in the local SQLite database.</span></footer>
+    </div>
+    <script src="/workspace.js?v=3" defer></script>
+</body>
+</html>

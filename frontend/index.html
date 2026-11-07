@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph AI Mission Control — Visualize AI Agent Workflows</title>
+    <meta name="description" content="An interactive platform for understanding how AI agents process requests, maintain state, make routing decisions, and execute workflows using LangGraph.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing.css?v=5">
+</head>
+<body>
+    <!-- Particle Canvas -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav class="nav" id="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                </svg>
+                <span>LANGGRAPH <span class="logo-accent">AI MISSION CONTROL</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/demo">Live Demo</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#architecture">Architecture</a>
+                <a href="/agents">Agents</a>
+                <a href="/knowledge-base">Knowledge Base</a>
+                <a href="/analytics">Analytics</a>
+                <a href="/about">About</a>
+                <span class="landing-status" id="landing-status"><i></i> CHECKING SYSTEM</span>
+                <a href="/demo" class="nav-cta">Launch Demo →</a>
+            </div>
+            <button class="nav-mobile-toggle" id="mobile-toggle" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero-bg-grid"></div>
+        <div class="hero-glow hero-glow-1"></div>
+        <div class="hero-glow hero-glow-2"></div>
+        <div class="hero-glow hero-glow-3"></div>
+
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                Real-time AI Agent Orchestration
+            </div>
+
+            <h1 class="hero-title">
+                <span class="title-line-1">LANGGRAPH</span>
+                <span class="title-line-2">AI MISSION CONTROL</span>
+            </h1>
+
+            <p class="hero-subtitle">Multi-Agent AI Orchestration • RAG • Memory • Tools • Observability</p>
+
+            <p class="hero-desc">
+                An interactive platform for building, executing, visualizing and understanding stateful AI agent workflows powered by LangGraph.
+            </p>
+
+            <div class="hero-actions">
+                <a href="/demo" class="btn-primary" id="launch-demo-btn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Launch Live Demo
+                </a>
+                <a href="/architecture" class="btn-secondary" id="explore-btn">
+                    Explore Architecture
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"/>
+                    </svg>
+                </a>
+            </div>
+
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">5</span>
+                    <span class="stat-label">Specialist Routes</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-value">Real-time</span>
+                    <span class="stat-label">SSE Workflow Events</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat">
+                    <span class="stat-value">LangGraph</span>
+                    <span class="stat-label">Powered</span>
+                </div>
+            </div>
+        </div>
+            <div class="hero-workflow-preview" aria-label="Topology of the actual LangGraph workflow">
+                <div class="hero-graph-heading"><span><i></i> GRAPH TOPOLOGY</span><small>ACTUAL BACKEND FLOW</small></div>
+                <div class="hero-flow">
+                    <div class="hero-flow-node start">START</div>
+                    <span class="hero-flow-arrow">↓</span>
+                    <div class="hero-flow-node">SESSION MEMORY</div>
+                    <span class="hero-flow-arrow">↓</span>
+                    <div class="hero-flow-node intent">INTENT ANALYZER</div>
+                    <span class="hero-flow-arrow">↓</span>
+                    <div class="hero-flow-node">KNOWLEDGE RETRIEVER</div>
+                    <span class="hero-flow-arrow">↓</span>
+                    <div class="hero-flow-node router">CONDITIONAL ROUTER</div>
+                    <span class="hero-flow-arrow">↓ selects one route</span>
+                    <div class="hero-agent-grid"><span>BILLING</span><span>ORDER</span><span>TECHNICAL</span><span>ACCOUNT</span><span>GENERAL</span></div>
+                    <span class="hero-flow-arrow">↓ selected specialist</span>
+                    <div class="hero-flow-node response">RESPONSE GENERATOR</div>
+                    <span class="hero-flow-arrow">↓</span>
+                    <div class="hero-flow-node end">END</div>
+                </div>
+                <p class="hero-graph-note">One specialist is selected after session recall and local full-text retrieval. Planner, critic, external tools and human approval are not implemented.</p>
+            </div>
+    </section>
+
+    <!-- PRODUCT PREVIEW -->
+    <section class="preview-section" id="preview">
+        <div class="section-container">
+            <div class="section-label">Live Preview</div>
+            <h2 class="section-title">Mission Control Interface</h2>
+            <p class="section-desc">Illustrative topology preview. Launch the demo to see real backend events and AgentState updates.</p>
+
+            <div class="preview-shell">
+                <div class="preview-bar">
+                    <span class="preview-dot red"></span>
+                    <span class="preview-dot yellow"></span>
+                    <span class="preview-dot green"></span>
+                    <span class="preview-url">localhost:8000/demo — LangGraph AI Mission Control</span>
+                </div>
+                <div class="preview-content">
+                    <!-- Mini nav -->
+                    <div class="pv-nav">
+                        <div class="pv-nav-logo">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                            <span>LangGraph Mission Control</span>
+                        </div>
+                        <div class="pv-nav-status"><span class="pv-dot"></span> SYSTEM ONLINE</div>
+                    </div>
+
+                    <!-- Main content area -->
+                    <div class="pv-body">
+                        <!-- Left col -->
+                        <div class="pv-left">
+                            <div class="pv-panel">
+                                <div class="pv-panel-title">Agent Console</div>
+                                <div class="pv-input">
+                                    <span class="pv-input-text">Example request: My payment was deducted...</span>
+                                </div>
+                                <a href="/demo" class="pv-run-btn">▶ Open Live Agent Console</a>
+                                <div class="pv-examples">
+                                    <span class="pv-tag billing">💳 Billing</span>
+                                    <span class="pv-tag tech">⚙️ Technical</span>
+                                    <span class="pv-tag order">📦 Order</span>
+                                </div>
+                            </div>
+
+                            <div class="pv-panel pv-trace">
+                                <div class="pv-panel-title">Illustrative Trace · Not a live run</div>
+                                <div class="pv-trace-item done">✓ Request received</div>
+                                <div class="pv-trace-item done">✓ Intent: Billing (0.96)</div>
+                                <div class="pv-trace-item done">✓ Router → Billing</div>
+                                <div class="pv-trace-item active">● Billing Agent selected</div>
+                                <div class="pv-trace-item pending">○ Response generation</div>
+                            </div>
+                        </div>
+
+                        <!-- Center: Workflow Graph -->
+                        <div class="pv-center">
+                            <div class="pv-graph">
+                                <!-- START -->
+                                <div class="pv-node pv-start active-node" style="left:50%;top:4%">START</div>
+                                <div class="pv-arrow" style="left:50%;top:12%;height:5%"></div>
+                                <!-- INTENT -->
+                                <div class="pv-node pv-intent active-node" style="left:50%;top:17%">INTENT<br>ANALYZER</div>
+                                <div class="pv-arrow" style="left:50%;top:27%;height:5%"></div>
+                                <!-- ROUTER -->
+                                <div class="pv-node pv-router active-node" style="left:50%;top:32%">ROUTER</div>
+                                <!-- Branch arrows -->
+                                <div class="pv-branch-line"></div>
+                                <!-- Agents row -->
+                                <div class="pv-agents-row">
+                                    <div class="pv-node pv-agent">BILLING</div>
+                                    <div class="pv-node pv-agent dim">TECHNICAL</div>
+                                    <div class="pv-node pv-agent dim">ORDER</div>
+                                    <div class="pv-node pv-agent dim">ACCOUNT</div>
+                                    <div class="pv-node pv-agent dim">GENERAL</div>
+                                </div>
+                                <!-- Merge arrows -->
+                                <div class="pv-merge-line"></div>
+                                <!-- RESPONSE -->
+                                <div class="pv-node pv-response" style="left:50%;top:72%">RESPONSE<br>GENERATOR</div>
+                                <div class="pv-arrow" style="left:50%;top:82%;height:5%"></div>
+                                <!-- END -->
+                                <div class="pv-node pv-end" style="left:50%;top:87%">END</div>
+                                <!-- Animated flow dot -->
+                            </div>
+                        </div>
+
+                        <!-- Right col -->
+                        <div class="pv-right">
+                            <div class="pv-panel pv-state">
+                                <div class="pv-panel-title">Live Agent State</div>
+                                <div class="pv-json">
+                                    <div class="pv-json-line"><span class="pv-key">"intent"</span>: <span class="pv-str">"BILLING"</span>,</div>
+                                    <div class="pv-json-line"><span class="pv-key">"confidence"</span>: <span class="pv-num">0.96</span>,</div>
+                                    <div class="pv-json-line"><span class="pv-key">"current_node"</span>: <span class="pv-str">"BILLING"</span>,</div>
+                                    <div class="pv-json-line"><span class="pv-key">"step_count"</span>: <span class="pv-num">4</span>,</div>
+                                    <div class="pv-json-line"><span class="pv-key">"status"</span>: <span class="pv-str">"processing"</span></div>
+                                </div>
+                            </div>
+
+                            <div class="pv-panel pv-response-panel">
+                                <div class="pv-panel-title">Agent Response</div>
+                                <div class="pv-response-text">Your request has been identified as a billing issue. The billing workflow was selected...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="preview-cta">
+                <a href="/demo" class="btn-primary">Open Interactive Demo →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- HOW IT WORKS -->
+    <section class="section" id="how-it-works">
+        <div class="section-container">
+            <div class="section-label">The Flow</div>
+            <h2 class="section-title">How It Works</h2>
+            <p class="section-desc">Every natural language request travels through a structured AI pipeline</p>
+
+            <div class="flow-diagram">
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#3b82f6">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                    </div>
+                    <h3>User Request</h3>
+                    <p>Natural language input via Agent Console</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#8b5cf6">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                    </div>
+                    <h3>START</h3>
+                    <p>Initializes AgentState with the request and session identifier</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#8b5cf6">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+                    </div>
+                    <h3>Session Memory</h3>
+                    <p>Loads recent successful turns from SQLite</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#06b6d4">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                    </div>
+                    <h3>Intent Analyzer</h3>
+                    <p>Gemini classification or deterministic fallback</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#10b981">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                    </div>
+                    <h3>Knowledge Retrieval</h3>
+                    <p>SQLite FTS5 document search with cited passages</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#f97316">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    </div>
+                    <h3>Conditional Router</h3>
+                    <p>Selects one specialist branch from the analyzed intent</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step highlight-step">
+                    <div class="flow-icon" style="--c:#8b5cf6">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 15v6M9 12H3M15 12h6M12 9V3"/></svg>
+                    </div>
+                    <h3>Specialist Agent</h3>
+                    <p>One BILLING / TECHNICAL / ORDER / ACCOUNT / GENERAL branch executes</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#10b981">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    </div>
+                    <h3>Response Generator</h3>
+                    <p>Gemini-grounded answer or deterministic support guidance</p>
+                </div>
+                <div class="flow-arrow">↓</div>
+                <div class="flow-step">
+                    <div class="flow-icon" style="--c:#06b6d4">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <h3>SSE Telemetry</h3>
+                    <p>Real graph state and trace events stream to Mission Control</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- WHAT IS LANGGRAPH -->
+    <section class="section section-alt" id="langgraph">
+        <div class="section-container">
+            <div class="section-label">Core Concepts</div>
+            <h2 class="section-title">What is LangGraph?</h2>
+            <p class="section-desc">LangGraph is a framework for building stateful, multi-step AI agent workflows as directed graphs</p>
+
+            <div class="concepts-grid">
+                <div class="concept-card">
+                    <div class="concept-icon" style="--c:#3b82f6;--bg:rgba(59,130,246,0.1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <h3>STATE</h3>
+                    <p>Information carried through the entire workflow. Holds all context — input, intent, routing decisions, responses — updated by each node.</p>
+                    <div class="concept-code">{ input, intent, confidence, response }</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon" style="--c:#10b981;--bg:rgba(16,185,129,0.1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h3>NODE</h3>
+                    <p>A unit of work in the graph. Each node is a Python function that reads from the state, performs work, and writes updates back.</p>
+                    <div class="concept-code">def billing_node(state) → dict</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon" style="--c:#8b5cf6;--bg:rgba(139,92,246,0.1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                    <h3>EDGE</h3>
+                    <p>A connection between workflow steps that defines the direction of execution. Edges control which node executes next.</p>
+                    <div class="concept-code">graph.add_edge("billing", "response")</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon" style="--c:#f97316;--bg:rgba(249,115,22,0.1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 15v6M9 12H3M15 12h6M12 9V3"/></svg>
+                    </div>
+                    <h3>ROUTER</h3>
+                    <p>Conditional routing function that reads state and returns the name of the next node to execute — enabling dynamic branching.</p>
+                    <div class="concept-code">add_conditional_edges(router_fn)</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon" style="--c:#06b6d4;--bg:rgba(6,182,212,0.1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </div>
+                    <h3>START</h3>
+                    <p>The entry point of the graph. Execution always begins from START, which connects to the first processing node.</p>
+                    <div class="concept-code">graph.add_edge(START, "intent_analyzer")</div>
+                </div>
+                <div class="concept-card">
+                    <div class="concept-icon" style="--c:#ef4444;--bg:rgba(239,68,68,0.1)">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                    </div>
+                    <h3>END</h3>
+                    <p>The terminal node. When execution reaches END, the graph stops and the final state is returned as the result.</p>
+                    <div class="concept-code">graph.add_edge("response", END)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURES -->
+    <section class="section" id="features">
+        <div class="section-container">
+            <div class="section-label">Capabilities</div>
+            <h2 class="section-title">Platform Features</h2>
+            <p class="section-desc">Everything you need to understand and demonstrate AI agent workflows</p>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon" style="--c:#3b82f6">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><circle cx="12" cy="12" r="4"/></svg>
+                    </div>
+                    <h3>Real-Time Workflow Visualization</h3>
+                    <p>Watch nodes activate, edges animate, and data flow through the LangGraph execution tree as it happens — not simulated after the fact.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--c:#06b6d4">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <h3>Live State Telemetry</h3>
+                    <p>The complete LangGraph agent state — intent, confidence, routing decisions, step count — streams to the UI in real time from the backend.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--c:#8b5cf6">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 15v6M9 12H3M15 12h6M12 9V3"/></svg>
+                    </div>
+                    <h3>Intelligent Routing</h3>
+                    <p>LLM-powered intent classification with deterministic fallback routes each request to the correct specialized agent workflow automatically.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--c:#10b981">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                    </div>
+                    <h3>Execution Trace</h3>
+                    <p>A live timeline of every execution step — node name, timestamp, status, duration — with current step highlighted and completed steps marked.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--c:#f97316">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                    </div>
+                    <h3>Natural Language Agent</h3>
+                    <p>Type any natural language request. The system analyzes your intent, routes to the right agent, and generates a contextual response end-to-end.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon" style="--c:#ef4444">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                    </div>
+                    <h3>LangGraph Education</h3>
+                    <p>Understand State, Nodes, Edges, Routers, and Conditional Branching through live demonstration rather than static documentation.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Platform capability status -->
+    <section class="section section-alt" id="platform-capabilities">
+        <div class="section-container">
+            <div class="section-label">Platform Status</div>
+            <h2 class="section-title">Built on a real graph. Clear about its boundaries.</h2>
+            <p class="section-desc">The live console visualizes only implemented backend behavior; upcoming platform capabilities are identified rather than simulated.</p>
+            <div class="platform-status-grid">
+                <a class="platform-status-card" href="/demo"><span class="capability-status available">AVAILABLE</span><h3>Workflow observability</h3><p>LangGraph execution steps, conditional routing, state snapshots and SSE delivery.</p></a>
+                <a class="platform-status-card" href="/analytics"><span class="capability-status available">BROWSER-LOCAL</span><h3>Run analytics</h3><p>Counts and client-measured latency derived from runs saved in this browser.</p></a>
+                <a class="platform-status-card" href="/knowledge-base"><span class="capability-status">LOCAL FTS ENABLED</span><h3>RAG &amp; knowledge</h3><p>Upload local documents for SQLite full-text retrieval and cited passages. Vector search is not configured.</p></a>
+                <a class="platform-status-card" href="/memory"><span class="capability-status">SQLITE MEMORY</span><h3>Persistent memory</h3><p>Successful turns are stored by session and loaded into the actual response-generation node.</p></a>
+                <a class="platform-status-card" href="/tools"><span class="capability-status">KNOWLEDGE SEARCH ONLY</span><h3>Tool calling</h3><p>The local knowledge search is the only registered tool; external integrations are not connected.</p></a>
+                <a class="platform-status-card" href="/settings"><span class="capability-status available">READ-ONLY</span><h3>Model mode</h3><p>Gemini intent classification when configured, with deterministic keyword fallback.</p></a>
+                <a class="platform-status-card" href="/agents"><span class="capability-status unavailable">NOT CONFIGURED</span><h3>Human approval</h3><p>No interrupt, approval gate or checkpoint-resume path is implemented in this graph.</p></a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ARCHITECTURE -->
+    <section class="section section-alt" id="architecture">
+        <div class="section-container">
+            <div class="section-label">System Design</div>
+            <h2 class="section-title">Architecture</h2>
+            <p class="section-desc">A clean, layered architecture where every component has a clear responsibility</p>
+
+            <div class="arch-diagram">
+                <div class="arch-layer" style="--c:#3b82f6">
+                    <div class="arch-layer-badge">CLIENT</div>
+                    <div class="arch-layer-content">
+                        <strong>USER</strong>
+                        <span>Natural language request via browser</span>
+                    </div>
+                </div>
+                <div class="arch-arrow-down">↓ HTTP / SSE</div>
+                <div class="arch-layer" style="--c:#8b5cf6">
+                    <div class="arch-layer-badge">FRONTEND</div>
+                    <div class="arch-layer-content">
+                        <strong>Mission Control UI</strong>
+                        <span>HTML · CSS · Vanilla JS · EventSource SSE</span>
+                    </div>
+                </div>
+                <div class="arch-arrow-down">↓ POST /api/agent/stream</div>
+                <div class="arch-layer" style="--c:#06b6d4">
+                    <div class="arch-layer-badge">API</div>
+                    <div class="arch-layer-content">
+                        <strong>FastAPI Backend</strong>
+                        <span>REST endpoints · SSE streaming · CORS · Validation</span>
+                    </div>
+                </div>
+                <div class="arch-arrow-down">↓ Python call</div>
+                <div class="arch-layer" style="--c:#10b981">
+                    <div class="arch-layer-badge">WORKFLOW</div>
+                    <div class="arch-layer-content">
+                        <strong>LangGraph StateGraph</strong>
+                        <span>AgentState · Nodes · Conditional edges · Router</span>
+                    </div>
+                </div>
+                <div class="arch-arrow-down">↓ API call</div>
+                <div class="arch-layer" style="--c:#f97316">
+                    <div class="arch-layer-badge">AI</div>
+                    <div class="arch-layer-content">
+                        <strong>LLM (Gemini / Deterministic Fallback)</strong>
+                        <span>Intent classification · Confidence scoring · Reasoning</span>
+                    </div>
+                </div>
+                <div class="arch-arrow-down">↓ intent result</div>
+                <div class="arch-layer" style="--c:#8b5cf6">
+                    <div class="arch-layer-badge">ROUTER</div>
+                    <div class="arch-layer-content">
+                        <strong>Conditional Router</strong>
+                        <span>BILLING · TECHNICAL · ORDER · ACCOUNT · GENERAL</span>
+                    </div>
+                </div>
+                <div class="arch-arrow-down">↓ SSE events streamed back</div>
+                <div class="arch-layer" style="--c:#ef4444">
+                    <div class="arch-layer-badge">RESPONSE</div>
+                    <div class="arch-layer-content">
+                        <strong>Response Generator + Live Telemetry</strong>
+                        <span>Final answer · Execution trace · Agent state</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- BOTTOM CTA -->
+    <section class="cta-section">
+        <div class="cta-glow"></div>
+        <div class="section-container" style="text-align:center;position:relative;z-index:2">
+            <h2 class="cta-title">Ready to Explore the Agent?</h2>
+            <p class="cta-desc">Launch the live demo and watch LangGraph execute in real time</p>
+            <a href="/demo" class="btn-primary btn-large" id="bottom-launch-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="none">
+                    <polygon points="5 3 19 12 5 21 5 3"/>
+                </svg>
+                Launch Live Demo
+            </a>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                LangGraph AI Mission Control
+            </div>
+            <div class="footer-links">
+                <a href="/demo">Live Demo</a>
+                <a href="#how-it-works">How It Works</a>
+                <a href="#architecture">Architecture</a>
+                <a href="/about">About</a>
+                <a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph Docs ↗</a>
+            </div>
+            <div class="footer-note">Built with LangGraph · FastAPI · Python</div>
+        </div>
+    </footer>
+
+    <script src="landing.js?v=2"></script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture — LangGraph AI Mission Control</title>
+    <meta name="description" content="Full system architecture of the LangGraph AI Mission Control. FastAPI, LangGraph StateGraph, Gemini LLM, SSE streaming, and vanilla frontend.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing.css">
+    <style>
+        .page-hero { padding: 120px 0 60px; text-align: center; position: relative; z-index: 1; }
+        .page-hero .page-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--cyan); background: rgba(6,182,212,.1); border: 1px solid rgba(6,182,212,.2); padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; }
+        .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px; }
+        .page-hero p  { font-size: 18px; color: var(--text-muted); max-width: 640px; margin: 0 auto; }
+        .arch-section { padding: 60px 0 100px; position: relative; z-index: 1; }
+        .arch-content { max-width: 1100px; margin: 0 auto; padding: 0 24px; display: grid; grid-template-columns: 1fr 1.4fr; gap: 48px; align-items: start; }
+        /* Left column: vertical stack */
+        .arch-stack { display: flex; flex-direction: column; align-items: stretch; gap: 0; }
+        .arch-layer-card {
+            padding: 16px 20px; border-radius: 12px;
+            border: 1px solid rgba(255,255,255,.06);
+            background: rgba(13,17,26,.85);
+            position: relative; transition: all .2s;
+        }
+        .arch-layer-card:hover { border-color: rgba(255,255,255,.12); transform: translateX(4px); }
+        .arch-layer-top { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+        .arch-layer-badge2 {
+            font-size: 9px; font-weight: 800; letter-spacing: 1.5px; text-transform: uppercase;
+            padding: 3px 8px; border-radius: 4px;
+        }
+        .arch-layer-card h3 { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .arch-layer-card p  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .arch-connector { display: flex; align-items: center; justify-content: center; height: 36px; gap: 10px; }
+        .arch-connector-line { height: 1px; flex: 1; max-width: 60px; }
+        .arch-connector-label { font-size: 10px; color: var(--text-muted); font-family: var(--mono); white-space: nowrap; }
+        /* Right column: component cards */
+        .component-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        .comp-card {
+            background: rgba(13,17,26,.85); border: 1px solid rgba(255,255,255,.07);
+            border-radius: 14px; padding: 20px 16px; transition: all .2s;
+        }
+        .comp-card:hover { border-color: rgba(255,255,255,.14); transform: translateY(-2px); }
+        .comp-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        .comp-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+        .comp-card p  { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+        .comp-tech { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 10px; }
+        .tech-pill { font-size: 10px; padding: 2px 8px; border-radius: 4px; border: 1px solid; font-weight: 600; }
+        .back-nav { position: fixed; bottom: 32px; right: 32px; z-index: 200; }
+        .back-nav a {
+            display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+            background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3);
+            border-radius: 10px; color: var(--purple); font-size: 13px; font-weight: 600;
+            text-decoration: none; transition: all .2s; backdrop-filter: blur(10px);
+        }
+        .back-nav a:hover { background: rgba(139,92,246,.25); }
+        @media(max-width:800px){ .arch-content { grid-template-columns: 1fr; } .component-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <nav class="nav" id="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span>LangGraph<span class="logo-accent"> Mission Control</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a><a href="/demo">Live Demo</a>
+                <a href="/how-it-works">How It Works</a>
+                <a href="/architecture" style="color:#fff">Architecture</a>
+                <a href="/about">About</a>
+                <a href="/demo" class="nav-cta">Launch Demo →</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="page-label">System Design</div>
+        <h1>Architecture</h1>
+        <p>A clean layered architecture where each component has a single, clear responsibility. Built for clarity, extensibility, and demonstration.</p>
+    </div>
+
+    <div class="arch-section">
+        <div class="arch-content">
+            <!-- LEFT: vertical flow diagram -->
+            <div>
+                <div class="section-label" style="margin-bottom:20px">Request Flow</div>
+                <div class="arch-stack">
+                    <div class="arch-layer-card" style="border-color:rgba(59,130,246,.25)">
+                        <div class="arch-layer-top">
+                            <div class="arch-layer-badge2" style="background:rgba(59,130,246,.1);color:var(--blue);border:1px solid rgba(59,130,246,.2)">CLIENT</div>
+                        </div>
+                        <h3>User · Browser</h3>
+                        <p>Natural language request typed into the Agent Console textarea.</p>
+                    </div>
+                    <div class="arch-connector">
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,transparent,rgba(59,130,246,.4))"></div>
+                        <div class="arch-connector-label">HTTP / EventSource SSE</div>
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,rgba(59,130,246,.4),transparent)"></div>
+                    </div>
+                    <div class="arch-layer-card" style="border-color:rgba(139,92,246,.25)">
+                        <div class="arch-layer-top">
+                            <div class="arch-layer-badge2" style="background:rgba(139,92,246,.1);color:var(--purple);border:1px solid rgba(139,92,246,.2)">FRONTEND</div>
+                        </div>
+                        <h3>Mission Control UI</h3>
+                        <p>HTML · CSS · Vanilla JS · EventSource SSE client, dashboard, knowledge upload/search, history, analytics, and session-memory pages.</p>
+                    </div>
+                    <div class="arch-connector">
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,transparent,rgba(6,182,212,.4))"></div>
+                        <div class="arch-connector-label">GET /api/agent/stream</div>
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,rgba(6,182,212,.4),transparent)"></div>
+                    </div>
+                    <div class="arch-layer-card" style="border-color:rgba(6,182,212,.25)">
+                        <div class="arch-layer-top">
+                            <div class="arch-layer-badge2" style="background:rgba(6,182,212,.1);color:var(--cyan);border:1px solid rgba(6,182,212,.2)">API</div>
+                        </div>
+                        <h3>FastAPI Backend</h3>
+                        <p>REST APIs for runs, history, analytics, documents, retrieval, and session memory; SSE workflow streaming and static file serving.</p>
+                    </div>
+                    <div class="arch-connector">
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,transparent,rgba(16,185,129,.4))"></div>
+                        <div class="arch-connector-label">Python function call</div>
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,rgba(16,185,129,.4),transparent)"></div>
+                    </div>
+                    <div class="arch-layer-card" style="border-color:rgba(16,185,129,.25)">
+                        <div class="arch-layer-top">
+                            <div class="arch-layer-badge2" style="background:rgba(16,185,129,.1);color:var(--green);border:1px solid rgba(16,185,129,.2)">WORKFLOW</div>
+                        </div>
+                        <h3>LangGraph StateGraph</h3>
+                        <p>AgentState TypedDict · SQLite session-memory recall · intent analyzer · FTS5 knowledge retrieval · conditional route · 5 specialists · response node.</p>
+                    </div>
+                    <div class="arch-connector">
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,transparent,rgba(249,115,22,.4))"></div>
+                        <div class="arch-connector-label">Google AI API call</div>
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,rgba(249,115,22,.4),transparent)"></div>
+                    </div>
+                    <div class="arch-layer-card" style="border-color:rgba(249,115,22,.25)">
+                        <div class="arch-layer-top">
+                            <div class="arch-layer-badge2" style="background:rgba(249,115,22,.1);color:var(--orange);border:1px solid rgba(249,115,22,.2)">AI</div>
+                        </div>
+                        <h3>Gemini 1.5 Flash · Deterministic Fallback</h3>
+                        <p>Gemini classification and grounded response generation when configured. Deterministic classification and support guidance remain available as fallback.</p>
+                    </div>
+                    <div class="arch-connector">
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,transparent,rgba(139,92,246,.4))"></div>
+                        <div class="arch-connector-label">SSE events streamed back</div>
+                        <div class="arch-connector-line" style="background:linear-gradient(90deg,rgba(139,92,246,.4),transparent)"></div>
+                    </div>
+                    <div class="arch-layer-card" style="border-color:rgba(239,68,68,.25)">
+                        <div class="arch-layer-top">
+                            <div class="arch-layer-badge2" style="background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.2)">RESPONSE</div>
+                        </div>
+                        <h3>Live Telemetry + Final Answer</h3>
+                        <p>Execution trace · live state · selected route · final agent response — all streamed to UI in real time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT: component cards -->
+            <div>
+                <div class="section-label" style="margin-bottom:20px">Components</div>
+                <div class="component-grid">
+                    <div class="comp-card">
+                        <div class="comp-icon" style="background:rgba(139,92,246,.1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+                        </div>
+                        <h3>Frontend</h3>
+                        <p>Vanilla HTML/CSS/JS. Product landing at <code>index.html</code>, Mission Control at <code>dashboard.html</code>, and shared operational workspace pages. SSE via EventSource API.</p>
+                        <div class="comp-tech">
+                            <span class="tech-pill" style="color:var(--purple);border-color:rgba(139,92,246,.3)">HTML5</span>
+                            <span class="tech-pill" style="color:var(--blue);border-color:rgba(59,130,246,.3)">CSS3</span>
+                            <span class="tech-pill" style="color:var(--orange);border-color:rgba(249,115,22,.3)">Vanilla JS</span>
+                            <span class="tech-pill" style="color:var(--cyan);border-color:rgba(6,182,212,.3)">SVG</span>
+                        </div>
+                    </div>
+                    <div class="comp-card">
+                        <div class="comp-icon" style="background:rgba(6,182,212,.1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+                        </div>
+                        <h3>FastAPI</h3>
+                        <p>Python ASGI backend. Serves REST API (<code>/api/agent/run</code>), SSE stream (<code>/api/agent/stream</code>), health check, and static frontend files.</p>
+                        <div class="comp-tech">
+                            <span class="tech-pill" style="color:var(--cyan);border-color:rgba(6,182,212,.3)">FastAPI</span>
+                            <span class="tech-pill" style="color:var(--green);border-color:rgba(16,185,129,.3)">Uvicorn</span>
+                            <span class="tech-pill" style="color:var(--blue);border-color:rgba(59,130,246,.3)">Pydantic</span>
+                        </div>
+                    </div>
+                    <div class="comp-card">
+                        <div class="comp-icon" style="background:rgba(16,185,129,.1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                        </div>
+                        <h3>LangGraph</h3>
+                        <p>StateGraph: START → memory_recall → intent_analyzer → knowledge_retriever → conditional route → one of five agents → response → END. Router is an edge, not a graph node.</p>
+                        <div class="comp-tech">
+                            <span class="tech-pill" style="color:var(--green);border-color:rgba(16,185,129,.3)">LangGraph 0.2+</span>
+                            <span class="tech-pill" style="color:var(--blue);border-color:rgba(59,130,246,.3)">TypedDict</span>
+                        </div>
+                    </div>
+                    <div class="comp-card">
+                        <div class="comp-icon" style="background:rgba(249,115,22,.1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                        </div>
+                        <h3>Gemini 1.5 Flash</h3>
+                        <p><code>langchain-google-genai</code> supports classification and response generation. If not configured or a call fails, deterministic routing and safe guidance are used.</p>
+                        <div class="comp-tech">
+                            <span class="tech-pill" style="color:var(--orange);border-color:rgba(249,115,22,.3)">Gemini Flash</span>
+                            <span class="tech-pill" style="color:var(--blue);border-color:rgba(59,130,246,.3)">LangChain</span>
+                        </div>
+                    </div>
+                    <div class="comp-card">
+                        <div class="comp-icon" style="background:rgba(59,130,246,.1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                        </div>
+                        <h3>SSE Streaming</h3>
+                        <p>Real-time streaming via Server-Sent Events. Each LangGraph node emits an event: node name, state snapshot, log message, route info.</p>
+                        <div class="comp-tech">
+                            <span class="tech-pill" style="color:var(--blue);border-color:rgba(59,130,246,.3)">EventSource</span>
+                            <span class="tech-pill" style="color:var(--green);border-color:rgba(16,185,129,.3)">app.stream()</span>
+                        </div>
+                    </div>
+                    <div class="comp-card">
+                        <div class="comp-icon" style="background:rgba(239,68,68,.1)">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        </div>
+                        <h3>State Management</h3>
+                        <p>AgentState TypedDict flows through every node. Each node receives full state and returns a partial dict of updates — immutable by design.</p>
+                        <div class="comp-tech">
+                            <span class="tech-pill" style="color:var(--red);border-color:rgba(239,68,68,.3)">TypedDict</span>
+                            <span class="tech-pill" style="color:var(--purple);border-color:rgba(139,92,246,.3)">Immutable</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API endpoints -->
+                <div style="margin-top:24px;background:rgba(13,17,26,.9);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 20px">
+                    <div class="section-label" style="margin-bottom:14px">API Endpoints</div>
+                    <div style="display:flex;flex-direction:column;gap:10px;font-family:var(--mono);font-size:12px">
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span style="background:rgba(16,185,129,.15);color:var(--green);padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;min-width:40px;text-align:center">GET</span>
+                            <span style="color:#9cdcfe">/api/health</span>
+                            <span style="color:var(--text-muted);font-size:11px;margin-left:auto">Health check</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span style="background:rgba(59,130,246,.15);color:var(--blue);padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;min-width:40px;text-align:center">POST</span>
+                            <span style="color:#9cdcfe">/api/agent/run</span>
+                            <span style="color:var(--text-muted);font-size:11px;margin-left:auto">Full batch run</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span style="background:rgba(16,185,129,.15);color:var(--green);padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;min-width:40px;text-align:center">GET</span>
+                            <span style="color:#9cdcfe">/api/agent/stream</span>
+                            <span style="color:var(--text-muted);font-size:11px;margin-left:auto">SSE real-time stream</span>
+                        </div>
+                        <div style="display:flex;align-items:center;gap:12px">
+                            <span style="background:rgba(16,185,129,.15);color:var(--green);padding:3px 8px;border-radius:4px;font-size:10px;font-weight:700;min-width:40px;text-align:center">GET</span>
+                            <span style="color:#9cdcfe">/demo, /how-it-works, /architecture, /about</span>
+                            <span style="color:var(--text-muted);font-size:11px;margin-left:auto">Pages</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                LangGraph AI Mission Control
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a><a href="/demo">Live Demo</a>
+                <a href="/how-it-works">How It Works</a><a href="/architecture">Architecture</a>
+                <a href="/about">About</a>
+            </div>
+        </div>
+    </footer>
+
+    <div class="back-nav">
+        <a href="/demo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Open Live Demo
+        </a>
+    </div>
+
+    <script src="landing.js"></script>
+</body>
+</html>

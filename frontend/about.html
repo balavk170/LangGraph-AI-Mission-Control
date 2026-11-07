@@ -1,0 +1,216 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About LangGraph — AI Mission Control</title>
+    <meta name="description" content="Learn what LangGraph is, why graph-based AI agents matter, and how this project demonstrates stateful multi-agent workflows.">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing.css">
+    <style>
+        .page-hero { padding: 120px 0 60px; text-align: center; position: relative; z-index: 1; }
+        .page-hero .page-label { display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--purple); background: rgba(139,92,246,.1); border: 1px solid rgba(139,92,246,.2); padding: 6px 14px; border-radius: 20px; margin-bottom: 20px; }
+        .page-hero h1 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; margin-bottom: 16px; }
+        .page-hero p  { font-size: 18px; color: var(--text-muted); max-width: 640px; margin: 0 auto; }
+        .about-section { padding: 60px 0 100px; position: relative; z-index: 1; }
+        .about-inner { max-width: 900px; margin: 0 auto; padding: 0 24px; }
+        .about-lead { font-size: 18px; color: var(--text-main); line-height: 1.8; margin-bottom: 48px; border-left: 3px solid var(--purple); padding-left: 20px; }
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 60px; }
+        .about-card {
+            background: rgba(13,17,26,.85); border: 1px solid rgba(255,255,255,.07);
+            border-radius: 14px; padding: 24px; transition: all .2s;
+        }
+        .about-card:hover { border-color: rgba(255,255,255,.13); transform: translateY(-2px); }
+        .about-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .about-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 8px; }
+        .about-card p  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+        .about-divider { border: none; border-top: 1px solid rgba(255,255,255,.06); margin: 48px 0; }
+        .about-use-cases { margin-bottom: 60px; }
+        .about-use-cases h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 24px; }
+        .use-case-list { display: flex; flex-direction: column; gap: 12px; }
+        .use-case-item {
+            display: flex; align-items: flex-start; gap: 14px;
+            background: rgba(13,17,26,.7); border: 1px solid rgba(255,255,255,.06);
+            border-radius: 10px; padding: 14px 16px;
+        }
+        .use-case-num { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+        .use-case-item h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .use-case-item p  { font-size: 12px; color: var(--text-muted); }
+        .about-quote {
+            background: rgba(139,92,246,.07); border: 1px solid rgba(139,92,246,.2);
+            border-radius: 14px; padding: 32px; text-align: center; margin-bottom: 60px;
+        }
+        .about-quote blockquote { font-size: 18px; font-style: italic; color: var(--text-main); line-height: 1.7; margin-bottom: 16px; }
+        .about-quote cite { font-size: 12px; color: var(--text-muted); }
+        .back-nav { position: fixed; bottom: 32px; right: 32px; z-index: 200; }
+        .back-nav a {
+            display: flex; align-items: center; gap: 8px; padding: 12px 18px;
+            background: rgba(139,92,246,.15); border: 1px solid rgba(139,92,246,.3);
+            border-radius: 10px; color: var(--purple); font-size: 13px; font-weight: 600;
+            text-decoration: none; transition: all .2s; backdrop-filter: blur(10px);
+        }
+        .back-nav a:hover { background: rgba(139,92,246,.25); }
+        @media(max-width:700px){ .about-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <canvas id="particle-canvas"></canvas>
+    <nav class="nav" id="main-nav">
+        <div class="nav-inner">
+            <a href="/" class="nav-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span>LangGraph<span class="logo-accent"> Mission Control</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="/">Home</a><a href="/demo">Live Demo</a>
+                <a href="/how-it-works">How It Works</a><a href="/architecture">Architecture</a>
+                <a href="/about" style="color:#fff">About</a>
+                <a href="/demo" class="nav-cta">Launch Demo →</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-hero">
+        <div class="page-label">About LangGraph</div>
+        <h1>Why Graph-Based AI Agents?</h1>
+        <p>LangGraph gives AI engineers explicit, typed, stateful control over multi-step agent workflows — far beyond simple prompt chaining.</p>
+    </div>
+
+    <div class="about-section">
+        <div class="about-inner">
+
+            <p class="about-lead">
+                LangGraph is a library from LangChain for building stateful, multi-actor applications with LLMs. It models agent workflows as directed graphs — where nodes are Python functions, edges control flow, and a TypedDict holds shared state. This gives developers precise control over what runs, when, and why.
+            </p>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <div class="about-card-icon" style="background:rgba(59,130,246,.1)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                    </div>
+                    <h3>Typed State</h3>
+                    <p>AgentState is a Python TypedDict. Every node reads from and writes to this shared state — typed, predictable, and inspectable at any point in execution.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon" style="background:rgba(16,185,129,.1)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    </div>
+                    <h3>Pure Python Nodes</h3>
+                    <p>Each node is just a Python function. No decorators, no magic. You can unit-test nodes in isolation, inspect their inputs/outputs, and swap implementations freely.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon" style="background:rgba(139,92,246,.1)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    </div>
+                    <h3>Conditional Edges</h3>
+                    <p>Routing is explicit: a Python function reads the current state and returns the name of the next node. No hidden dispatch, no magic routing — full transparency.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon" style="background:rgba(249,115,22,.1)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                    </div>
+                    <h3>Built-in Streaming</h3>
+                    <p><code>app.stream(state)</code> yields one chunk per node execution. This enables live telemetry to the UI — exactly what this Mission Control demonstrates.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon" style="background:rgba(6,182,212,.1)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06b6d4" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    </div>
+                    <h3>Persistence & Memory</h3>
+                    <p>LangGraph checkpointers (SQLite, Postgres, Redis) persist state across turns, enabling multi-turn conversations and long-running workflows that survive restarts.</p>
+                </div>
+                <div class="about-card">
+                    <div class="about-card-icon" style="background:rgba(239,68,68,.1)">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <h3>Human-in-the-Loop</h3>
+                    <p>Set <code>interrupt_before</code> on any node to pause execution and request human approval. The agent waits — state is checkpointed — until a human confirms.</p>
+                </div>
+            </div>
+
+            <hr class="about-divider">
+
+            <div class="about-use-cases">
+                <h2>Real-World Use Cases</h2>
+                <div class="use-case-list">
+                    <div class="use-case-item">
+                        <div class="use-case-num" style="background:rgba(59,130,246,.1);color:var(--blue)">1</div>
+                        <div>
+                            <h4>Customer Service Automation</h4>
+                            <p>Route support tickets to specialized agents (billing, tech, orders) based on intent — exactly what this project demonstrates.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-num" style="background:rgba(16,185,129,.1);color:var(--green)">2</div>
+                        <div>
+                            <h4>Research & Retrieval Agents</h4>
+                            <p>Multi-step agents that search, retrieve context, reason over results, and produce citations — with state tracking at every step.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-num" style="background:rgba(139,92,246,.1);color:var(--purple)">3</div>
+                        <div>
+                            <h4>Code Review & Generation Pipelines</h4>
+                            <p>Agents that analyze code, run tests, identify issues, generate fixes, and request human review before committing — with checkpointing between steps.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-num" style="background:rgba(249,115,22,.1);color:var(--orange)">4</div>
+                        <div>
+                            <h4>Document Processing Workflows</h4>
+                            <p>Parse → extract → classify → validate → store. Each stage is a node. State accumulates context. Errors trigger routing to exception handlers.</p>
+                        </div>
+                    </div>
+                    <div class="use-case-item">
+                        <div class="use-case-num" style="background:rgba(6,182,212,.1);color:var(--cyan)">5</div>
+                        <div>
+                            <h4>Agentic Task Planners</h4>
+                            <p>LLM creates a plan, nodes execute sub-tasks, results feed back into state, and a final node synthesizes the answer — with optional human approval gates.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="about-quote">
+                <blockquote>"LangGraph is to agent workflows what React is to UI: it gives you an explicit, composable, predictable model instead of imperative spaghetti."</blockquote>
+                <cite>— Design philosophy behind this project</cite>
+            </div>
+
+            <div style="text-align:center">
+                <a href="/demo" class="btn-primary" style="display:inline-flex;align-items:center;gap:8px;margin-right:12px">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    Try the Live Demo
+                </a>
+                <a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener" class="btn-secondary" style="display:inline-flex;align-items:center;gap:8px">
+                    LangGraph Docs ↗
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-inner">
+            <div class="footer-logo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                LangGraph AI Mission Control
+            </div>
+            <div class="footer-links">
+                <a href="/">Home</a><a href="/demo">Live Demo</a>
+                <a href="/how-it-works">How It Works</a><a href="/architecture">Architecture</a>
+                <a href="/about">About</a>
+                <a href="https://langchain-ai.github.io/langgraph/" target="_blank" rel="noopener">LangGraph Docs ↗</a>
+            </div>
+            <div class="footer-note">Built with LangGraph · FastAPI · Python · Google Gemini</div>
+        </div>
+    </footer>
+
+    <div class="back-nav">
+        <a href="/demo">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" stroke="none"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+            Open Live Demo
+        </a>
+    </div>
+
+    <script src="landing.js"></script>
+</body>
+</html>

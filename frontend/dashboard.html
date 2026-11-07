@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#070b14">
+    <title>Mission Control | LangGraph AI</title>
+    <meta name="description" content="Run and observe real LangGraph agent workflows in real time.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/dashboard.css?v=5">
+</head>
+<body>
+    <div class="app-shell">
+        <header class="topbar">
+            <a class="brand" href="/" aria-label="LangGraph AI Mission Control home">
+                <span class="brand-mark" aria-hidden="true">◈</span>
+                <span class="brand-copy">
+                    <strong>LANGGRAPH <b>AI</b> MISSION CONTROL</strong>
+                    <small>Multi-Agent AI Orchestration <i>•</i> RAG <i>•</i> Memory <i>•</i> Tools <i>•</i> Observability</small>
+                </span>
+            </a>
+            <nav class="top-links" aria-label="Primary navigation">
+                <a class="active" href="/demo">Mission Control</a>
+                <a href="#execution-section">Workflow</a>
+                <a href="/how-it-works">How It Works</a>
+                <a href="/architecture">Architecture</a>
+                <a href="/about">About</a>
+            </nav>
+            <div class="top-actions">
+                <span class="system-badge" id="system-status-badge"><i></i><span id="system-status-text">CHECKING SYSTEM</span></span>
+                <span class="avatar" title="Browser session" aria-label="Browser session">MC</span>
+            </div>
+        </header>
+
+        <section class="metrics-bar" aria-label="Execution metrics">
+            <article class="metric-card"><span class="metric-icon play">▶</span><span class="metric-copy"><small>Total Executions <em>SERVER</em></small><strong id="metric-total">0</strong></span></article>
+            <article class="metric-card"><span class="metric-icon success">✓</span><span class="metric-copy"><small>Successful Runs</small><strong id="metric-success">0</strong></span></article>
+            <article class="metric-card"><span class="metric-icon failure">×</span><span class="metric-copy"><small>Failed Runs</small><strong id="metric-failed">0</strong></span></article>
+            <article class="metric-card"><span class="metric-icon latency">◷</span><span class="metric-copy"><small>Avg. Latency <em>SERVER MEASURED</em></small><strong id="metric-latency">—</strong></span></article>
+            <article class="metric-card"><span class="metric-icon tokens">⌁</span><span class="metric-copy"><small>Token Usage</small><strong id="metric-tokens">Not reported</strong></span></article>
+            <article class="metric-card"><span class="metric-icon agents">◎</span><span class="metric-copy"><small>Specialist Routes</small><strong>5 <small class="metric-unit">configured</small></strong></span></article>
+            <article class="metric-card"><span class="metric-icon knowledge">▤</span><span class="metric-copy"><small>Indexed Documents</small><strong id="metric-knowledge">0</strong></span></article>
+        </section>
+
+        <div class="dashboard-grid">
+            <aside class="left-rail">
+                <button class="new-run" id="btn-new-chat" type="button"><span>＋</span> New Conversation</button>
+                <div class="rail-label">WORKSPACE</div>
+                <nav class="rail-nav" aria-label="Workspace">
+                    <a class="selected" href="/demo"><span>◫</span> Mission Control</a>
+                    <a href="#execution-section"><span>⌘</span> Workflow</a>
+                    <a href="/execution-history"><span>◷</span> Execution History</a>
+                    <a href="/analytics"><span>▥</span> Analytics</a>
+                </nav>
+                <div class="rail-label">PLATFORM</div>
+                <nav class="rail-nav" aria-label="Platform">
+                    <a href="/agents"><span>◇</span> Agents</a>
+                    <a href="/knowledge-base"><span>▤</span> Knowledge Base</a>
+                    <a href="/memory"><span>◉</span> Memory</a>
+                    <a href="/tools"><span>⌁</span> Tools</a>
+                    <a href="/settings"><span>⚙</span> Settings</a>
+                </nav>
+                <div class="rail-label prompt-label">QUICK PROMPTS</div>
+                <div class="quick-prompts">
+                    <button type="button" data-prompt="My payment was deducted but my order is still pending."><span class="prompt-dot billing"></span>Payment issue</button>
+                    <button type="button" data-prompt="Where is my order? It was supposed to arrive yesterday."><span class="prompt-dot order"></span>Order status</button>
+                    <button type="button" data-prompt="My application crashes when I upload a PDF."><span class="prompt-dot technical"></span>App crashing</button>
+                    <button type="button" data-prompt="I forgot my password."><span class="prompt-dot account"></span>Password reset</button>
+                    <button type="button" data-prompt="What are your business hours?"><span class="prompt-dot general"></span>Business hours</button>
+                    <button type="button" data-prompt="Tell me something random."><span class="prompt-dot general"></span>General question</button>
+                </div>
+                <div class="rail-history">
+                    <div class="rail-label">RECENT RUNS <a href="/execution-history">VIEW ALL</a></div>
+                    <div id="history-list" class="history-list"><p class="muted-empty">Runs from this browser appear here.</p></div>
+                </div>
+                <div class="rail-foot"><span class="foot-pulse"></span> LangGraph StateGraph <small>Persistent server history</small></div>
+            </aside>
+
+            <main class="center-column">
+                <section class="panel graph-panel" id="execution-section">
+                    <header class="panel-heading">
+                        <div class="heading-icon cyan">⌘</div>
+                        <div class="heading-copy"><h1>Agent Workflow</h1><p>Live topology · events from the LangGraph execution stream</p></div>
+                        <span class="execution-pill" id="execution-status">IDLE</span>
+                        <button class="icon-button" id="btn-reset-graph" type="button" title="Clear current run" aria-label="Clear current run">↻</button>
+                    </header>
+                    <div class="graph-meta"><span><i class="legend-dot done"></i> Completed</span><span><i class="legend-dot active"></i> Active</span><span><i class="legend-dot pending"></i> Pending</span><span class="route-chip" id="route-badge" hidden>ROUTE <b id="route-badge-text">—</b></span></div>
+                    <div class="graph-scroll">
+                        <svg class="workflow-svg" id="workflow-svg" viewBox="0 0 960 565" role="img" aria-labelledby="graph-title graph-description">
+                            <title id="graph-title">Actual LangGraph StateGraph workflow</title>
+                            <desc id="graph-description">Start, session memory, intent analysis, knowledge retrieval, conditional routing to one specialist, response generation, then end. Planner, critic, and human approval are not implemented.</desc>
+                            <defs>
+                                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#43516a"/></marker>
+                                <marker id="arrow-lit" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L8 3z" fill="#4c9dff"/></marker>
+                                <linearGradient id="flow-stroke"><stop stop-color="#54d7ff"/><stop offset="1" stop-color="#8b6cff"/></linearGradient>
+                            </defs>
+                            <g class="graph-edges" aria-hidden="true">
+                                <path id="edge-start-memory" class="graph-edge" d="M480 55V69"/>
+                                <path id="edge-memory-intent" class="graph-edge" d="M480 108V119"/>
+                                <path id="edge-intent-retrieval" class="graph-edge" d="M480 170V181"/>
+                                <path id="edge-retrieval-router" class="graph-edge" d="M480 231V244"/>
+                                <path id="edge-router-billing" class="graph-edge branch-edge" d="M451 273H92V324"/>
+                                <path id="edge-router-tech" class="graph-edge branch-edge" d="M451 273H286V324"/>
+                                <path id="edge-router-order" class="graph-edge branch-edge" d="M480 302V324"/>
+                                <path id="edge-router-account" class="graph-edge branch-edge" d="M509 273H674V324"/>
+                                <path id="edge-router-general" class="graph-edge branch-edge" d="M509 273H868V324"/>
+                                <path id="edge-billing-resp" class="graph-edge merge-edge" d="M92 394V418H480V441"/>
+                                <path id="edge-tech-resp" class="graph-edge merge-edge" d="M286 394V408H480V441"/>
+                                <path id="edge-order-resp" class="graph-edge merge-edge" d="M480 394V441"/>
+                                <path id="edge-account-resp" class="graph-edge merge-edge" d="M674 394V408H480V441"/>
+                                <path id="edge-general-resp" class="graph-edge merge-edge" d="M868 394V418H480V441"/>
+                                <path id="edge-resp-end" class="graph-edge" d="M480 500V524"/>
+                            </g>
+                            <g class="graph-node start-node" id="node-start" data-node="START" tabindex="0" role="button" aria-label="Inspect START node">
+                                <rect x="434" y="14" width="92" height="42" rx="18"/><text x="480" y="40" text-anchor="middle">START</text>
+                            </g>
+                            <g class="graph-node memory-node" id="node-memory" data-node="MEMORY" tabindex="0" role="button" aria-label="Inspect Session Memory node">
+                                <rect x="382" y="69" width="196" height="39" rx="10"/><text x="480" y="93" text-anchor="middle">SESSION MEMORY</text>
+                            </g>
+                            <g class="graph-node intent-node" id="node-intent" data-node="INTENT ANALYZER" tabindex="0" role="button" aria-label="Inspect Intent Analyzer node">
+                                <rect x="360" y="119" width="240" height="51" rx="13"/><text x="480" y="141" text-anchor="middle">INTENT ANALYZER</text><text class="node-sub" x="480" y="158" text-anchor="middle">Gemini classification or keyword fallback</text>
+                            </g>
+                            <g class="graph-node retrieval-node" id="node-retrieval" data-node="KNOWLEDGE RETRIEVER" tabindex="0" role="button" aria-label="Inspect Knowledge Retriever node">
+                                <rect x="360" y="181" width="240" height="50" rx="12"/><text x="480" y="203" text-anchor="middle">KNOWLEDGE RETRIEVER</text><text class="node-sub" x="480" y="219" text-anchor="middle">SQLite full-text search · citations</text>
+                            </g>
+                            <g class="graph-node router-node" id="node-router" data-node="ROUTER" tabindex="0" role="button" aria-label="Inspect Router">
+                                <path d="M480 244L509 273L480 302L451 273z"/><text x="480" y="277" text-anchor="middle">ROUTER</text>
+                            </g>
+                            <g class="graph-node agent-node billing-node" id="node-billing" data-node="BILLING" tabindex="0" role="button" aria-label="Inspect Billing Agent">
+                                <rect x="20" y="324" width="144" height="70" rx="12"/><text x="92" y="354" text-anchor="middle">BILLING</text><text class="node-sub" x="92" y="376" text-anchor="middle">Specialist agent</text>
+                            </g>
+                            <g class="graph-node agent-node technical-node" id="node-tech" data-node="TECHNICAL SUPPORT" tabindex="0" role="button" aria-label="Inspect Technical Support Agent">
+                                <rect x="214" y="324" width="144" height="70" rx="12"/><text x="286" y="354" text-anchor="middle">TECHNICAL</text><text class="node-sub" x="286" y="376" text-anchor="middle">Specialist agent</text>
+                            </g>
+                            <g class="graph-node agent-node order-node" id="node-order" data-node="ORDER" tabindex="0" role="button" aria-label="Inspect Order Agent">
+                                <rect x="408" y="324" width="144" height="70" rx="12"/><text x="480" y="354" text-anchor="middle">ORDER</text><text class="node-sub" x="480" y="376" text-anchor="middle">Specialist agent</text>
+                            </g>
+                            <g class="graph-node agent-node account-node" id="node-account" data-node="ACCOUNT" tabindex="0" role="button" aria-label="Inspect Account Agent">
+                                <rect x="602" y="324" width="144" height="70" rx="12"/><text x="674" y="354" text-anchor="middle">ACCOUNT</text><text class="node-sub" x="674" y="376" text-anchor="middle">Specialist agent</text>
+                            </g>
+                            <g class="graph-node agent-node general-node" id="node-general" data-node="GENERAL" tabindex="0" role="button" aria-label="Inspect General Agent">
+                                <rect x="796" y="324" width="144" height="70" rx="12"/><text x="868" y="354" text-anchor="middle">GENERAL</text><text class="node-sub" x="868" y="376" text-anchor="middle">Specialist agent</text>
+                            </g>
+                            <g class="graph-node response-node" id="node-response" data-node="RESPONSE" tabindex="0" role="button" aria-label="Inspect Response node">
+                                <rect x="350" y="441" width="260" height="59" rx="13"/><text x="480" y="464" text-anchor="middle">RESPONSE GENERATOR</text><text class="node-sub" x="480" y="483" text-anchor="middle">Grounded answer or safe fallback</text>
+                            </g>
+                            <g class="graph-node end-node" id="node-end" data-node="END" tabindex="0" role="button" aria-label="Inspect END node">
+                                <rect x="434" y="524" width="92" height="32" rx="16"/><text x="480" y="544" text-anchor="middle">END</text>
+                            </g>
+                        </svg>
+                    </div>
+                    <div class="graph-caption"><span>Conditional branch selects exactly one specialist per request.</span><span class="actual-graph">ACTUAL BACKEND GRAPH</span></div>
+                </section>
+
+                <section class="panel console-panel">
+                    <header class="panel-heading compact-heading">
+                        <div class="heading-icon blue">⌕</div>
+                        <div class="heading-copy"><h2>Run an Agent</h2><p>Send a request through the real workflow</p></div>
+                        <span class="character-count" id="input-count">0 / 2000</span>
+                    </header>
+                    <div class="composer">
+                        <label class="visually-hidden" for="prompt-input">Describe the request for the agent</label>
+                        <textarea id="prompt-input" maxlength="2000" placeholder="Describe what you need help with…" rows="2"></textarea>
+                        <button class="run-button" id="btn-run" type="button"><span aria-hidden="true">▶</span> RUN AGENT</button>
+                    </div>
+                    <div class="composer-note"><span>Enter to run <i>·</i> Shift+Enter for a new line</span><span>Maximum 2,000 characters</span></div>
+                    <div id="error-banner" class="error-banner" role="alert" hidden></div>
+                </section>
+
+                <section class="panel response-panel">
+                    <header class="panel-heading compact-heading">
+                        <div class="heading-icon purple">✦</div>
+                        <div class="heading-copy"><h2>Agent Response</h2><p id="response-status">Waiting for a request</p></div>
+                    </header>
+                    <div class="response-body">
+                        <div class="request-summary"><small>REQUEST</small><p id="response-req-text">No request executed in this view.</p></div>
+                        <div class="answer-summary"><small>WORKFLOW OUTPUT</small><p id="response-ans-text">Gemini response generation is used when configured; otherwise the workflow returns deterministic support guidance.</p></div>
+                    </div>
+                    <div class="response-metadata">
+                        <div><small>RETRIEVED SOURCES</small><div id="source-list" class="metadata-list">None retrieved</div></div>
+                        <div><small>TOOLS USED</small><div id="tools-list" class="metadata-list">None used</div></div>
+                    </div>
+                </section>
+            </main>
+
+            <aside class="right-column">
+                <section class="panel state-panel">
+                    <header class="panel-heading">
+                        <div class="heading-icon cyan">⌗</div>
+                        <div class="heading-copy"><h2>Live Agent State</h2><p>State snapshot from the latest graph event</p></div>
+                        <span class="live-tag"><i></i> LIVE</span>
+                    </header>
+                    <div class="state-summary">
+                        <div><small>INTENT</small><strong id="state-intent">—</strong></div>
+                        <div><small>CONFIDENCE</small><strong id="state-confidence">—</strong></div>
+                        <div><small>CURRENT NODE</small><strong id="state-node">START</strong></div>
+                        <div><small>SELECTED ROUTE</small><strong id="state-route">—</strong></div>
+                        <div><small>STEP COUNT</small><strong id="state-steps">0</strong></div>
+                        <div><small>STATUS</small><strong id="state-status">Idle</strong></div>
+                    </div>
+                    <details class="json-details">
+                        <summary>Inspect raw AgentState</summary>
+                        <pre id="json-content">{}</pre>
+                    </details>
+                    <div class="telemetry-grid">
+                        <div><small>SESSION ID</small><strong id="session-id">—</strong></div>
+                        <div><small>RUN ID</small><strong id="run-id">—</strong></div>
+                        <div><small>MODEL MODE</small><strong id="model-mode">Checking…</strong></div>
+                        <div><small>RUN LATENCY</small><strong id="run-latency">—</strong></div>
+                        <div><small>DOCUMENTS RETRIEVED</small><strong id="documents-retrieved">0</strong></div>
+                        <div><small>TOKENS USED</small><strong id="tokens-used">Not reported</strong></div>
+                    </div>
+                </section>
+
+                <section class="panel trace-panel">
+                    <header class="panel-heading">
+                        <div class="heading-icon green">⌁</div>
+                        <div class="heading-copy"><h2>Execution Trace</h2><p>Ordered events received from SSE</p></div>
+                        <button class="text-button" id="btn-clear-trace" type="button">CLEAR</button>
+                    </header>
+                    <div id="trace-list" class="trace-list" aria-live="polite"><p class="empty-state">Waiting for a workflow run…</p></div>
+                </section>
+
+                <section class="panel inspector-panel">
+                    <header class="panel-heading">
+                        <div class="heading-icon orange">ⓘ</div>
+                        <div class="heading-copy"><h2>Node Inspector</h2><p>Choose a node in the graph</p></div>
+                        <div class="inspector-arrows"><button type="button" id="node-prev-btn" aria-label="Previous node">‹</button><button type="button" id="node-next-btn" aria-label="Next node">›</button></div>
+                    </header>
+                    <div class="inspector-content">
+                        <div class="inspector-title"><span class="node-state-dot"></span><h3 id="info-title">START</h3></div>
+                        <p id="info-desc">LangGraph entry point. The workflow begins with the user's input.</p>
+                        <dl class="inspector-facts">
+                            <div><dt>Reads</dt><dd id="info-reads">User request</dd></div>
+                            <div><dt>Updates</dt><dd id="info-updates">Initial state</dd></div>
+                            <div><dt>Next</dt><dd id="info-next">Intent Analyzer</dd></div>
+                            <div><dt>Runtime tools</dt><dd id="info-tools">None reported</dd></div>
+                            <div><dt>Execution status</dt><dd id="info-status">Not executed</dd></div>
+                            <div><dt>Model</dt><dd id="info-model">Checking…</dd></div>
+                            <div><dt>Node duration</dt><dd id="info-duration">Not reported by API</dd></div>
+                        </dl>
+                    </div>
+                </section>
+            </aside>
+        </div>
+        <footer class="app-footer"><span>LANGGRAPH AI MISSION CONTROL</span><span>Run counts and history are stored in this browser only. Model, token, RAG and tool telemetry is not emitted by the current backend.</span><a href="/">Product overview ↗</a></footer>
+    </div>
+    <script src="/dashboard.js?v=4" defer></script>
+</body>
+</html>
