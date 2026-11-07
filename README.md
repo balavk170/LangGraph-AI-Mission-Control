@@ -112,20 +112,7 @@ Run the FastAPI server using Uvicorn:
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 
-### Step 6: Open the Application
-Open your web browser and navigate to:
-👉 **[http://localhost:8000](http://localhost:8000)**
-
-You can now explore the landing page, read the documentation sections, and launch the Live Demo to see the agents in action!
-
----
-
-## 🛑 Stopping the Server
-To stop the backend server, simply press `Ctrl + C` in the terminal where Uvicorn is running.
-
----
-
-## 💼 Interview Demonstration Guide
+ation Guide
 
 When presenting this project during a technical interview or portfolio review:
 
